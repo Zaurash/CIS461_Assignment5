@@ -1,0 +1,192 @@
+/* should -30 be MINUS special_rexpr instead of MINUS expr? */
+/* line numbers */
+/* args_nonempty with rexprs or ident? */
+
+import java_cup.runtime.*;
+import java.util.*;
+import java.lang.*;
+
+parser code {:
+
+	int error_counter = 0;
+
+    public void report_error(String message, Object info) {
+	
+		if (error_counter > 20){
+		System.err.println("There are more than 20 errors");
+		System.exit(1);
+		}
+		
+		error_counter++;
+   
+        StringBuilder m = new StringBuilder("Error");
+   
+        if (info instanceof java_cup.runtime.Symbol) {
+
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+   
+            if (s.left >= 0) {                
+                m.append(" in line "+(s.left+1));   
+
+                if (s.right >= 0)                    
+
+                    m.append(", column "+(s.right+1));
+            }
+        }
+   
+        m.append(" : "+message);
+   
+        System.err.println(m);
+    }
+   
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        System.exit(1);
+    }
+:};
+
+terminal 			CLASS, DEF, EXTENDS, IF, ELIF, ELSE, WHILE, RETURN;
+terminal			AND, OR, NOT, none;
+terminal			PLUS, MINUS, TIMES, DIVIDE;
+terminal			EQUALS, ATMOST, LESS, ATLEAST, MORE, EQUIV;
+terminal			LPAREN, RPAREN, LBRACE, RBRACE, LBRACKET, RBRACKET;
+terminal			COMMA, SEMICOLON, DOT, COLON;
+terminal int		INT;
+terminal String 	STRING, IDENT;
+
+non terminal 				Program, Statement, Class;
+non terminal 				Method;
+non terminal 				Return_Statement, Elif_Statement;
+non terminal Method.Argument Formal_Arg;
+non terminal Expr			R_Expr, L_Expr;
+non terminal Ident			OptExtends;
+non terminal LinkedList 	Classes, Statements, Statement_Block, Elif_Statements, Args_nonEmpty, Actual_Args, Formals, Formals_nonEmpty, Methods;
+non terminal Stmt.IFBRANCH	Else_Statement;
+non terminal CLS.Signature	Class_Signature;
+non terminal CLS.Body		Class_Body;
+
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+precedence left EQUALS, EQUIV, ATMOST, ATLEAST, LESS, MORE, AND, OR, NOT;
+precedence left DOT;
+
+
+   Program 			::= Classes:c Statements:s {: RESULT = new Program(c,s); :}
+   					;
+					
+   Statements		::= Statements:sts Statement:st 										{: sts.add(st); RESULT = sts; :}
+   					|																		{: RESULT = new LinkedList<Stmt>(); :}
+					;
+   
+   Classes			::= Classes:cs Class:c 													{: cs.add(c); RESULT = cs; :}
+   					|																		{: LinkedList<CLS> temp = new LinkedList<CLS>(); 
+																								temp.add(new CLS(CLS.signature("Obj", "Obj"), new CLS.Body()));
+						 																		temp.add(new CLS(CLS.signature("String", "Obj"), new CLS.Body()));
+																								temp.add(new CLS(CLS.signature("Nothing", "Obj"), new CLS.Body())); 
+																								temp.add(new CLS(CLS.signature("Int", "Obj"), new CLS.Body())); RESULT = temp; :}
+					;
+   
+   Class   			::= Class_Signature:sig Class_Body:bd 									{: RESULT = new CLS(sig,bd); :}
+   					;
+   
+   Class_Signature  ::= CLASS IDENT:i LPAREN Formals:f RPAREN OptExtends:oe 				{: RESULT = CLS.signature(i, f, oe.name); :}
+   					;
+					
+   OptExtends		::= EXTENDS IDENT:i 													{: RESULT = new Ident(i); :}
+   					|																		{: Ident temp = new Ident("Obj"); RESULT = temp; :}
+					;
+					
+   Class_Body		::= LBRACKET Statements:s Methods:m RBRACKET							{: RESULT = CLS.body(s, m); :}
+   					;
+					
+   Statement_Block ::=	LBRACKET Statements:s RBRACKET										{: RESULT = s; :}
+   					;
+					
+   Statement		::= IF R_Expr:e Statement_Block:s Elif_Statements:ef Else_Statement:es	{: RESULT = Stmt.ifstmt(e, s, ef, es); :}
+					|	WHILE R_Expr:e Statement_Block:s									{: RESULT = Stmt.whilestmt(e, s); :}
+					|	Return_Statement:r													{: RESULT = Stmt.retstatement((Expr)r); :}
+					|	L_Expr COLON IDENT EQUALS R_Expr SEMICOLON
+					|	L_Expr:l EQUALS R_Expr:r SEMICOLON									{: RESULT = Stmt.assignstmt(l,r); :} /* check for null lexpr */
+					|	R_Expr:r SEMICOLON											   		{: if(r != null){
+																								if(Expr.Constructor.class.isInstance(r)){
+																									RESULT = Stmt.cstatement((Expr.Constructor)r);}
+																								if(Expr.MethodCall.class.isInstance(r)){
+																									RESULT = Stmt.methodstatement((Expr.MethodCall)r);	
+																										}} :}
+					;
+					
+   Elif_Statements	::= Elif_Statements:stmts Elif_Statement:s								{: stmts.add(s); RESULT = stmts; :}
+					|																		{: RESULT = new LinkedList<Stmt.IFBRANCH>(); :}
+					;
+		
+   Elif_Statement	::=	ELIF R_Expr:r Statement_Block:s										{: RESULT = Stmt.ifbranch(r, s); :}
+					;
+					
+   Else_Statement	::= ELSE Statement_Block:s												{: RESULT = Stmt.ifbranch(new Expr("True"), s); :}
+   					|																		{: RESULT = Stmt.ifbranch(new Expr("false"), new LinkedList<Stmt>()); :}
+					;
+			
+   Return_Statement	::=	RETURN SEMICOLON													{: RESULT = new Expr("Nothing", "Nothing"); :}
+   					|	RETURN R_Expr:r SEMICOLON											{: RESULT = r; :}
+					;
+   
+   Formals			::= Formals_nonEmpty:fs													{: RESULT = fs; :}
+   					|																		{: RESULT = new LinkedList<Method.Argument>(); :}
+   					;
+					
+   Formals_nonEmpty ::= Formals_nonEmpty:f COMMA Formal_Arg:a								{: LinkedList<Method.Argument> temp = new LinkedList<Method.Argument>();
+   																								temp.addAll(f); temp.add(a); RESULT = temp; :}
+   					|	Formal_Arg:f														{: LinkedList<Method.Argument> temp = new LinkedList<Method.Argument>();
+																								temp.add(f); RESULT = temp; :}
+					;
+					
+   Formal_Arg		::=	IDENT:n COLON IDENT:t												{: RESULT = new Method.Argument(n, t); :}
+   					;
+					
+   Methods			::= Methods:ms Method:m																{: ms.add(m); RESULT = ms; :}
+   					|																					{: RESULT = new LinkedList<Method>(); :}
+					;
+   
+   Method			::= DEF:d IDENT:nm LPAREN Formals:ar RPAREN COLON IDENT:ret Statement_Block:s		{: RESULT = new Method(nm, ar, ret, s); :}
+   					;
+					
+   Actual_Args		::= Args_nonEmpty:a								{: RESULT = a; :}
+					|												{: RESULT = new LinkedList<Expr>(); :}
+					;
+					
+   Args_nonEmpty	::= Args_nonEmpty:a COMMA R_Expr:r				{: LinkedList<Expr> temp = new LinkedList<Expr>();
+   																		temp.addAll(a); temp.add(r); RESULT = temp; :}
+					|	R_Expr:r									{: LinkedList<Expr> temp = new LinkedList<Expr>();
+   																		temp.add(r); RESULT = temp; :}
+					;
+					
+	L_Expr			::= IDENT:i											{: RESULT = new Expr(i, "Ident"); :}
+					| 	R_Expr:r DOT IDENT:i							{: RESULT = new Expr(r, i, "Ident"); :}
+					;
+	
+	R_Expr			::= STRING:s 										{: RESULT = new Expr(s, "String"); :}
+					|	INT:i											{: RESULT = new Expr(i, "Int"); :}
+					| 	L_Expr:l										{: RESULT = l; :}
+					|	R_Expr:r1 PLUS R_Expr:r2						{: RESULT = Expr.binop("PLUS", r1, r2); :}
+					|	R_Expr:r1 MINUS R_Expr:r2						{: RESULT = Expr.binop("MINUS", r1, r2); :}
+					|	R_Expr:r1 TIMES R_Expr:r2						{: RESULT = Expr.binop("TIMES", r1, r2); :}			
+					|	R_Expr:r1 DIVIDE R_Expr:r2						{: RESULT = Expr.binop("DIVIDE", r1, r2); :}
+					|	MINUS INT:i										{: int temp = i * -1; RESULT = Expr.intconst(temp); :}
+					|	LPAREN R_Expr RPAREN
+					|	R_Expr EQUALS R_Expr
+					|	R_Expr EQUIV R_Expr
+					| 	R_Expr ATMOST R_Expr
+					| 	R_Expr ATLEAST R_Expr
+					| 	R_Expr LESS R_Expr
+					| 	R_Expr MORE R_Expr
+					| 	R_Expr AND R_Expr
+					| 	R_Expr OR R_Expr
+					| 	R_Expr NOT R_Expr
+					|	R_Expr:r DOT IDENT:i LPAREN Actual_Args:a RPAREN	{: RESULT = Expr.methodcall(r, i, a); :}
+					|	IDENT:i LPAREN Actual_Args:a RPAREN					{: RESULT = Expr.constructor(i, a); :}
+					;
+					
+
+					
+					
+					

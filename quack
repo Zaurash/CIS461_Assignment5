@@ -1,0 +1,2 @@
+#1 /bin/bash
+java -cp .:./Users/Zauran/Documents/CIS461/Assignments/Assignment4:./lib/java-cup-11b.jar scanner_driver $1

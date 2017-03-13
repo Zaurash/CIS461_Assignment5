@@ -1,0 +1,58 @@
+class JustTheTop( x: String) extends Another
+	{
+	this.x = x;
+	this.y = "hi";
+	def STR(x: String) : String {
+			if 2 == 3 {
+			z = 2;
+			return "x";
+			}
+			
+			elif y < x {
+			z = 3;
+			x = y;
+			return x; }
+			
+			else {
+
+			}
+			
+			while(true){
+			return x;
+			}
+			
+		 }
+
+	}
+
+class Another( y: Obj ){
+	this.y = "foo";
+	def STR(x: String) : String {
+		return "x";
+		 }
+		 
+	def PLUS(other: Int): Int{
+	z = Another();
+	z.STR();
+	
+	return other;
+	
+	}
+	
+		 }
+		 
+		 
+
+foo.y = -5;
+3<5;
+Another(y);
+x.foo(y);
+
+if x=y {
+this.x = x;
+}
+
+while x < 5{
+this.k = f;
+}
+

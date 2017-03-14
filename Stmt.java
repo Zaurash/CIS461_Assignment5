@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 public class Stmt{
 		
@@ -111,6 +112,61 @@ public class Stmt{
 	
 	public static RetStatement retstatement(Expr r){
 		return new RetStatement(r);
+	}
+	
+	//Statement codegen
+	public static void codegen(LinkedList<Stmt> l, PrintWriter writer, Generator gen){
+		for(int st = 0; st < l.size(); st++){
+			
+		  //If Statements
+  		  if (Stmt.IfStmt.class.isInstance(l.get(st))){
+  			  Stmt.IfStmt ts = (Stmt.IfStmt)l.get(st);	
+			  			  
+  		  }  		  	
+  			
+		  
+		  //Assignment Statements
+	  	  if (Stmt.AssignStmt.class.isInstance(l.get(st))){
+		  	  Stmt.AssignStmt ts = (Stmt.AssignStmt)l.get(st);
+			  
+			  String tmp = gen.get_tmp();				  
+
+			  writer.println(Generator.declare(ts, tmp));				  
+			  writer.println(ts.l_expr.name + " = " + ts.r_expr.name + ";\n");
+
+	  	  }
+		  
+		  
+		  //While Statements
+  		  if (Stmt.WhileStmt.class.isInstance(l.get(st))){
+  			  Stmt.WhileStmt ts = (Stmt.WhileStmt)l.get(st);
+			  				  
+  		  }
+		  
+		  
+		  //Return Statement
+  		  if (Stmt.RetStatement.class.isInstance(l.get(st))){
+  			  Stmt.RetStatement ts = (Stmt.RetStatement)l.get(st);
+			  				  
+  		  }  
+		  
+		  
+		  //Constructor Call
+  		  if (Stmt.CStatement.class.isInstance(l.get(st))){
+  			  Stmt.CStatement ts = (Stmt.CStatement)l.get(st);		
+			  		  
+  		  }      
+		
+		
+		  //Method Call
+  		  if (Stmt.MethodStatement.class.isInstance(l.get(st))){
+  			  Stmt.MethodStatement ts = (Stmt.MethodStatement)l.get(st);	
+			  			  
+  		  }  
+		  
+		  
+		
+		}
 	}
 	
 }

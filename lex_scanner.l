@@ -100,8 +100,8 @@ Trips = [\"][\"][\"]
 
 
 <STRING> {
-  \" {yybegin(YYINITIAL); /*System.out.println(yyline+1 + " STRING " + "\"" + string.toString() + "\"");*/ return symbol(sym.STRING, yytext());}
-  {Trips} {yybegin(YYINITIAL); /*System.out.println(yyline+1 + " STRING " + "\"" + string.toString() + "\"");*/ return symbol(sym.STRING, yytext());}
+  \" {yybegin(YYINITIAL); /*System.out.println(yyline+1 + " STRING " + "\"" + string.toString() + "\"");*/ return symbol(sym.STRING, "\"" + string.toString() + "\"");}
+  {Trips} {yybegin(YYINITIAL); /*System.out.println(yyline+1 + " STRING " + "\"" + string.toString() + "\"");*/ return symbol(sym.STRING, "\"" + string.toString() + "\"");}
   [^\n\r\"\\]+ { string.append( yytext() ); }
   \\0 {string.append('\0');}
   \\b {string.append('\b');}

@@ -1,4 +1,6 @@
 x = 2;
+y = 2;
+five = "hi";
 if(true){
 return "hi";
 }

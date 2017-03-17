@@ -1,0 +1,9 @@
+class foo( x: Int, y: Int){
+this.x = 2;
+this.y = 3;
+
+	def PLUS(first: Int, second: Int): Int{
+	return "hello";
+	}
+}
+

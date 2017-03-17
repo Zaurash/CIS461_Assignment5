@@ -1,0 +1,29 @@
+// A file that uses all sorts of calls for methods in the classes as well as bare r_expr's
+
+class foo( x: Int, y: Int){
+	this.x = 2;
+	this.y = 3;
+
+	def PLUS(first: Int, second: Int): Int{
+	return first + second;
+	}
+}
+
+class bar(var: String){
+
+	def set_a(a: String): String{
+		var = a;
+	}
+
+}
+
+		 
+x = 4;
+y = 5;	 
+i = bar("yes");
+3<5;
+foo(2, 3);
+foo(x, y);
+x.PLUS(y);
+
+

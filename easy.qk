@@ -1,6 +1,35 @@
+
+		 
+class foo( x: Int, y: Int){
+this.x = 2;
+this.y = 3;
+foo.PLUS(hi, 2);
+
+	def PLUS(first: Int, second: Int): Int{
+	return first + second;
+	}
+}
+
+class bar(){
+}
+
 x = 2;
 y = 2;
 five = "hi";
 if(true){
+x = 2;
 return "hi";
 }
+
+while(true){
+if(false){
+y = x;
+}
+else{
+x = y;
+
+}
+}
+
+foo(1, 2);
+foo(x, y);

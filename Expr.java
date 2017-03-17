@@ -64,6 +64,8 @@ public class Expr{
 		public int e1, e2;
 		public String op;
 		public int res;
+		String et = "BinOp";
+		public String ty = "Int";
 		
 		public BinOp(String op, Expr a, Expr b){
 
@@ -93,6 +95,7 @@ public class Expr{
 	}
 	
 	public static class Constructor extends Expr{
+		String et = "Constructor";
 		String c_name;
 		LinkedList<Expr> args;
 		
@@ -108,6 +111,7 @@ public class Expr{
 	
 	public static class MethodCall extends Expr{
 		Expr r_expr;
+		String et = "MethodCall";
 		String method_name;
 		LinkedList<Expr> args;
 		

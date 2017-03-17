@@ -1,0 +1,11 @@
+//Does not accept unknown identifier bar
+
+class foo( x: Int, y: Int){
+this.x = bar;
+this.y = 3;
+
+	def PLUS(first: Int, second: Int): Int{
+	return first + second;
+	}
+}
+

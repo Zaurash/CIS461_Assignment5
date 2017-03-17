@@ -1,6 +1,6 @@
 [DEFAULT]
 name =  Zachary Jones
 host =  ix.cs.uoregon.edu
-path = /home/users/zgj/CIS461/Assignments/CIS461_Assignment4
-repo = https://github.com/Zaurash/CIS461_Assignment4.git
+path = /home/users/zgj/CIS461/Assignments/CIS461_Assignment5
+repo = https://github.com/Zaurash/CIS461_Assignment5.git
 partner = none

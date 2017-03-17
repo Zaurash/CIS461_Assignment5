@@ -1,0 +1,56 @@
+//Two classes in which one extends the other and the subclass must have a field which is a subclass of the superclass Another's field
+
+
+	
+class Another( y: Obj ){
+
+	def STR(x: String) : String {
+		return "x";
+	}
+		 
+	def PLUS(other: Int): Int{
+		z = Another();
+		z.STR();
+	
+		return other;
+	
+	}
+	
+}
+		 
+class JustTheTop( x: String) extends Another
+	{
+	this.x = "Thanks";
+	
+	def STR(x: String) : String {
+			z = 5;
+			y = 0;
+			
+			if x == "Hello" {
+			z = 2;
+			}
+			
+			while(y < z){
+			
+			if y < 1{
+				y = 0;
+				x = "set to 0";
+			}
+			
+			elif y < 10 {
+			y = y + 1;
+			x = "increased by one";
+			}
+			
+			else {
+			y = 9;
+			x = "number 9";			
+			}
+			
+			}
+					
+			return x;			
+			
+		 }
+
+}

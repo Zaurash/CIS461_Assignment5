@@ -109,21 +109,27 @@ precedence left DOT;
 					|	L_Expr:l EQUALS R_Expr:r SEMICOLON									{: RESULT = Stmt.assignstmt(l,r); :} /* check for null lexpr */
 					|	R_Expr:r SEMICOLON											   		{: if(r != null){
 																								if(Expr.Constructor.class.isInstance(r)){
-																									RESULT = Stmt.cstatement((Expr.Constructor)r);}
+																									RESULT = Stmt.cstatement((Expr.Constructor)r);
+																								}
 																								if(Expr.MethodCall.class.isInstance(r)){
+																									Expr.MethodCall y = (Expr.MethodCall)r;
 																									RESULT = Stmt.methodstatement((Expr.MethodCall)r);	
-																										}} :}
+																								}
+																								if(Expr.BinOp.class.isInstance(r)){
+																									RESULT = (Expr.BinOp)r;
+																								}		
+																										} :}
 					;
 					
    Elif_Statements	::= Elif_Statements:stmts Elif_Statement:s								{: stmts.add(s); RESULT = stmts; :}
 					|																		{: RESULT = new LinkedList<Stmt.IFBRANCH>(); :}
 					;
 		
-   Elif_Statement	::=	ELIF R_Expr:r Statement_Block:s										{: RESULT = Stmt.ifbranch(r, s); :}
+   Elif_Statement	::=	ELIF R_Expr:r Statement_Block:s										{: RESULT = Stmt.ifbranch("elif", r, s); :}
 					;
 					
-   Else_Statement	::= ELSE Statement_Block:s												{: RESULT = Stmt.ifbranch(new Expr("True"), s); :}
-   					|																		{: RESULT = Stmt.ifbranch(new Expr("false"), new LinkedList<Stmt>()); :}
+   Else_Statement	::= ELSE Statement_Block:s												{: RESULT = Stmt.ifbranch("else", new Expr("True"), s); :}
+   					|																		{: RESULT = Stmt.ifbranch("else", new Expr("false"), new LinkedList<Stmt>()); :}
 					;
 			
    Return_Statement	::=	RETURN SEMICOLON													{: RESULT = new Expr("Nothing", "Nothing"); :}

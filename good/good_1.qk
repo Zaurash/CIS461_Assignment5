@@ -1,0 +1,11 @@
+//Shows a basic class and method that adds together two Int variables
+
+class foo( x: Int, y: Int){
+this.x = 2;
+this.y = 3;
+
+	def PLUS(first: Int, second: Int): Int{
+	return first + second;
+	}
+}
+

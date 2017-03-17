@@ -43,7 +43,7 @@ public class scanner_driver {
 				  
 				  if(zt.r_expr.type.equals("Ident")){
 					  if(!(cvar_names.contains(zt.r_expr.name))){
-						  System.err.println("ERROR: " + zt.r_expr.name + " is undefined");
+						  System.err.println("ERROR: Identifier " + zt.r_expr.name + " is undefined in class " + cur_class.sig.name);
 						  System.exit(1);
 					  }
 					  String gg = (String)zt.r_expr.name;
@@ -56,6 +56,8 @@ public class scanner_driver {
 				  }
 				  cvar_names.add(zt.l_expr.name);
 				  cl_vars.put(zt.l_expr.name, tt);
+				  zt.l_expr.type = tt;
+				  zt.r_expr.type = tt;
 			  }
 		  }
 		  			  
@@ -162,6 +164,11 @@ public class scanner_driver {
 							}
 					  }
 					  else{	
+						  //here
+						  if(Expr.BinOp.class.isInstance(cst.ret_expr)){
+							  Expr.BinOp temp1 = (Expr.BinOp) cst.ret_expr;
+							  temp_type = temp1.ty;
+						  }
 					 
 					  	if(!(temp_type.equals(ret_tp))){
 							System.err.println("ERROR: Method " + cur_meth.name + " is supposed to return " + ret_tp + " but instead returns " + temp_type);

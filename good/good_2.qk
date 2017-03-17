@@ -1,0 +1,18 @@
+//Has 2 classes and the bar class has a setter function for one of its fields
+
+class foo( x: Int, y: Int){
+	this.x = 2;
+	this.y = 3;
+
+	def PLUS(first: Int, second: Int): Int{
+	return first + second;
+	}
+}
+
+class bar(var: String){
+
+	def set_a(a: String): String{
+		var = a;
+	}
+
+}

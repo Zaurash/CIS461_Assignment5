@@ -4,10 +4,11 @@ import java.io.*;
 public class Generator{
 	
 	int next_tmp = 0;
+	HashMap<String, String> tmp_list = new HashMap<String, String>();
 		
 	public String get_tmp(){
 		next_tmp++;
-		return "tmp_" + next_tmp + ";";
+		return "tmp_" + next_tmp;
 	}
 	
 	public static String declare(Stmt.AssignStmt d, String t){
@@ -18,7 +19,7 @@ public class Generator{
 		  }
 	  }
 	  
-	  String o = d.l_expr.type + " " + t;
+	  String o = "obj_" + d.l_expr.type + " " + t + ";";
 	  return o;
 	  
 	}
@@ -33,23 +34,18 @@ public class Generator{
 			//Generate generic code
 			writer.println("#include <stdio.h>");
 			writer.println("#include \"builtins/runtime/Builtins.h\"\n");
-			writer.println("void generated_main();\n");
+			
+			//Generate code for classes
+			CLS.codegen(prog.class_list, writer, gen);									
+			
+			writer.println("\n\nvoid generated_main();\n");
 			writer.println("int main(int argc, char** argv) {");
 			writer.println("	printf(\"=== BEGINNING EXECUTION ===\\n\");");
 			writer.println("	generated_main();");
 			writer.println("	printf(\"=== FINISHED EXECUTION === \\n\");");
 			writer.println("}\n");
 			writer.println("void generated_main() {\n");				
-			
-			
-			//Generate code for classes
-			writer.println("Classes: ");
-			
-			for(int cl = 0; cl < prog.class_list.size(); cl++){
-				writer.println(prog.class_list.get(cl).sig.name);
-			}
-			
-			writer.println("");		
+				
 			
 			
 			//Generate code for statements
@@ -57,7 +53,7 @@ public class Generator{
 			
 
 			//End of file
-			writer.println("}");
+			writer.println("\n}");
 			writer.close();
 		}
 		

@@ -130,7 +130,7 @@ public class Stmt{
 			  for(int b = 0; b < ts.ifstmts.size(); b++){
 				  //Print type of branch and call codegen on list of statements for current branch
 				  if(ts.ifstmts.get(b).type != "else"){
-					  writer.println(ts.ifstmts.get(b).type + " () " + "{\n");				  	
+					  writer.println(ts.ifstmts.get(b).type + " (false) " + "{\n");				  	
 				  }
 				  else{
 					  writer.println(ts.ifstmts.get(b).type + "{\n");				  					  	  
@@ -230,7 +230,7 @@ public class Stmt{
   		  if (Stmt.MethodStatement.class.isInstance(l.get(st))){
   			  Stmt.MethodStatement ts = (Stmt.MethodStatement)l.get(st);
 			  
-			  writer.print(ts.r_expr.name + "." + ts.method_name);	
+			  writer.print(ts.r_expr.name + "->clazz->" + ts.method_name);	
 			  if(ts.args.isEmpty()){
 				  writer.print("();");
 			  }

@@ -130,7 +130,8 @@ public class CLS{
 				CLS cur_class = l.get(i);
 				String c_name = cur_class.sig.name;
 				if(!(c_name == "Obj" || c_name == "String" || c_name == "Int" || c_name == "Nothing")){
-					writer.println("\n\nstruct class_" + c_name + "_struct;");
+					writer.println("\n\n//Defining class " + c_name);
+					writer.println("struct class_" + c_name + "_struct;");
 					writer.println("typedef struct class_" + c_name + "_struct* class_" + c_name);
 					writer.println("\ntypedef struct obj_" + c_name + "_struct {");
 					writer.println("  class_" + c_name + " clazz;");
@@ -209,7 +210,42 @@ public class CLS{
 					writer.println("}");
 					
 					//Created Methods
+					for(int j = 0; j < cur_class.bd.methods.size(); j++){
+						Method m = cur_class.bd.methods.get(j);
+						writer.print("obj_" + m.ret_type + " " + c_name + "_method_" + m.name + "(");
+						if(m.formals.isEmpty()){
+							writer.print("void");
+						}
+						else{
+							writer.print("obj_" + m.formals.get(0).type);
+							for(int s = 1; s < m.formals.size(); s++){
+								writer.print(", obj_" + m.formals.get(s).type);
+							}
+						}
+						writer.println(") {");
+						
+						Stmt.codegen(m.stmt_block, writer, gen);
+						writer.println("}");
+						//continue here
+						
+						
+					}
 					
+					writer.println("struct  class_" + c_name + "_struct  the class_" + c_name + "_struct = {");
+					writer.println("  new_" + c_name + ",");
+					writer.println("  Obj_method_STRING,");
+					writer.println("  Obj_method_PRINT,");
+					writer.print("  Obj_method_EQUALS");
+					for(int j = 0; j < cur_class.bd.methods.size(); j++){
+						Method m = cur_class.bd.methods.get(j);
+						writer.println(",\n" + "  " + c_name + "_method_" + m.name);
+						
+					}
+					writer.println("};");
+					
+					writer.println("class_" + c_name + "the_class_" + c_name + " = &the_class_" + c_name + "_struct;");
+					
+
 										
 										
 										
